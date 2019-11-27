@@ -1,0 +1,51 @@
+*.pydevproject
+.metadata
+.gradle
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+
+# External tool builders
+.externalToolBuilders/
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
+# sbteclipse plugin
+.target
+
+# TeXlipse plugin
+.texlipse
+
+# Logs
+*.log
+*.log.*
+
+# Docs
+docs/
+
+# misc crap
+thumbs.db
+.DS_Store
+.*.sw?
+Repast.settings
+
+# temporarily ignoring output folder
+output/
+repast-licenses/
+lib/
+installer/
+.classpath
+.project
+MessageCenter.log4j.properties
+failures.*.txt
+standard.*.txt

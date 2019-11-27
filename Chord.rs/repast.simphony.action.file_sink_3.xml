@@ -1,0 +1,14 @@
+<repast.simphony.data2.engine.FileSinkDescriptor simphonyVersion="2.7.0">
+  <name>FailureSink</name>
+  <dataSet>FailureDS</dataSet>
+  <delimiter>,</delimiter>
+  <format>TABULAR</format>
+  <sourceIds class="linked-hash-set">
+    <string>AvgTimeouts</string>
+    <string>MaxTimeouts</string>
+    <string>MinTimeouts</string>
+    <string>Failures</string>
+  </sourceIds>
+  <fileName>failures.txt</fileName>
+  <addTimeStamp>true</addTimeStamp>
+</repast.simphony.data2.engine.FileSinkDescriptor>
