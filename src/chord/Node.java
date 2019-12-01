@@ -69,7 +69,7 @@ public class Node {
 					Node newFinger = result.node;
 					this.fingerLock.writeLock().lock();
 					if (i < this.fingerTable.size())
-						this.fingerTable.set(this.next, newFinger);
+						this.fingerTable.set(i, newFinger);
 					else
 						this.fingerTable.add(newFinger);
 					this.fingerLock.writeLock().unlock();
@@ -302,5 +302,20 @@ public class Node {
 	
 	public void fail() {
 		this.failed = true;
+	}
+	
+	public void leave() {
+		Context<Object> context = ContextUtils.getContext(this);
+		Network<Object> net = (Network<Object>)context.getProjection("chord network");
+		if (this.edge != null)
+			net.removeEdge(this.edge);
+		this.successor.predecessor = this.predecessor;
+		if (this.predecessor != null) {
+			this.predecessor.successor = this.successor;
+			this.predecessor.successors = this.successors;
+			if (this.predecessor.edge != null)
+				net.removeEdge(this.predecessor.edge);
+			this.predecessor.edge = net.addEdge(this.predecessor, this.successor);
+		}
 	}
 }

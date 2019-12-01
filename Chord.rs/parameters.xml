@@ -13,7 +13,13 @@
 									
 		/>
 				<parameter name="nodes" displayName="Number of nodes" type="int" 
-						defaultValue="4" 
+						defaultValue="50" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
+									
+		/>
+				<parameter name="join-fail" displayName="Fail/Join per round" type="int" 
+						defaultValue="3" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
@@ -25,10 +31,17 @@
 									
 		/>
 				<parameter name="keys_exponent" displayName="Exponent (2^M)" type="int" 
-						defaultValue="3" 
+						defaultValue="7" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
+		/>
+				<parameter name="type" displayName="Type of run" type="java.lang.String" 
+						defaultValue="Standard" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									values="Standard Disaster "
+						
 		/>
 				<parameter name="rounds" displayName="Number of rounds" type="int" 
 						defaultValue="100" 

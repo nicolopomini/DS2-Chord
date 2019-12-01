@@ -37,6 +37,8 @@ public class Builder implements ContextBuilder<Object> {
 		int rounds = params.getInteger("rounds");
 		float failureProb = params.getFloat("fail_prob");
 		int succLength = params.getInteger("successor_length");
+		String runType = params.getString("type");
+		int failJoin = params.getInteger("join-fail");
 		assert (failureProb <= 1.0);
 		if (RunEnvironment.getInstance().isBatch()) {
 			keysExponent = nodes + 7;
@@ -105,7 +107,7 @@ public class Builder implements ContextBuilder<Object> {
 				index = allIds.size() - 1;
 			allNodes.get(allIds.get(i)).setPredecessor(allNodes.get(allIds.get(index)));
 		}
-		NodeManager manager = new NodeManager(context, allNodes, failureProb);
+		NodeManager manager = new NodeManager(context, space, allNodes, failureProb, runType.equals("Disaster"), failJoin, totalKeys, center, radius);
 		context.add(manager);
 		RunEnvironment.getInstance().endAt(rounds);
 		return context;
