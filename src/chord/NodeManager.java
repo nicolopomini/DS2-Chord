@@ -59,8 +59,6 @@ public class NodeManager {
 //				while (this.allNodes.containsKey(nextKey))
 //					nextKey = RandomHelper.nextIntFromTo(0, this.totalKeys - 1);
 //				Node randomKnown = nodes.get(RandomHelper.nextIntFromTo(0, nodes.size() - 1));
-//				//System.out.println("Random null: " + (randomKnown == null));
-//				//System.out.println("Starting node " + nextKey);
 //				Node n = new Node(nextKey);
 //				allNodes.put(nextKey, n);
 //				context.add(n);
@@ -78,16 +76,6 @@ public class NodeManager {
 //		        double y = center + radius * Math.sin(theta);
 //		        space.moveTo(n, x, y);
 //		        System.out.println("Node " + nextKey + " started");
-////				if (n.join(randomKnown) == 0) {
-////					allNodes.put(nextKey, n);
-////					context.add(n);
-////					double theta = 2 * Math.PI * nextKey / totalKeys;
-////			        double x = center + radius * Math.cos(theta);
-////			        double y = center + radius * Math.sin(theta);
-////			        space.moveTo(n, x, y);
-////			        System.out.println("Node started");
-////				} else
-////					System.out.println("Node not started since join has failed");
 //			}
 //			System.out.println("Done starting");
 		}
