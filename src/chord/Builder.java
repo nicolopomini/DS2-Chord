@@ -30,7 +30,7 @@ public class Builder implements ContextBuilder<Object> {
 				"space", context, new RandomCartesianAdder<Object>(),
 				new repast.simphony.space.continuous.WrapAroundBorders(), 50,
 				50);
-		
+		Network<Object> net = (Network<Object>)context.getProjection("chord network");
 		Parameters params = RunEnvironment.getInstance().getParameters();
 		int keysExponent = params.getInteger("keys_exponent");
 		int nodes = params.getInteger("nodes");
@@ -56,7 +56,7 @@ public class Builder implements ContextBuilder<Object> {
 		HashMap<Integer, Node> allNodes = new HashMap<>();
 		for (int i = 0; i < nodes; i++) {
 			int id = RandomHelper.nextIntFromTo(i * totalKeys / nodes, (i + 1) * totalKeys / nodes - 1);
-			Node n = new Node(id);
+			Node n = new Node(id, net);
 			allNodes.put(id, n);
 			context.add(n);
 			double theta = 2 * Math.PI * id / totalKeys;
@@ -64,7 +64,6 @@ public class Builder implements ContextBuilder<Object> {
 	        double y = center + radius * Math.sin(theta);
 	        space.moveTo(n, x, y);
 		}
-		Network<Object> net = (Network<Object>)context.getProjection("chord network");
 		// setting finger tables
 		ArrayList<Integer> allIds = new ArrayList<>(allNodes.keySet());
 		Collections.sort(allIds);
@@ -107,7 +106,7 @@ public class Builder implements ContextBuilder<Object> {
 				index = allIds.size() - 1;
 			allNodes.get(allIds.get(i)).setPredecessor(allNodes.get(allIds.get(index)));
 		}
-		NodeManager manager = new NodeManager(context, space, allNodes, failureProb, runType.equals("Disaster"), failJoin, totalKeys, center, radius);
+		NodeManager manager = new NodeManager(context, space, net, allNodes, failureProb, runType.equals("Disaster"), failJoin, totalKeys, center, radius);
 		context.add(manager);
 		RunEnvironment.getInstance().endAt(rounds);
 		return context;

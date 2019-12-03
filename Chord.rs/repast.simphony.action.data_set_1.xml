@@ -1,7 +1,6 @@
 <repast.simphony.data2.engine.DataSetDescriptor simphonyVersion="2.7.0">
-  <name>FailureDS</name>
-  <type>NON_AGGREGATE</type>
-  <sourceType>chord.NodeManager</sourceType>
+  <name>Standard</name>
+  <type>AGGREGATE</type>
   <inclTick>false</inclTick>
   <inclBatchRun>false</inclBatchRun>
   <inclRandomSeed>false</inclRandomSeed>
@@ -12,40 +11,62 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>ONE_TIME</frequency>
-    <hashCode>-707477011</hashCode>
+    <hashCode>-2075920983</hashCode>
   </scheduleParams>
   <atEnd>false</atEnd>
   <methodDataSources class="linked-hash-map">
     <entry>
-      <string>AvgTimeouts</string>
+      <string>minPath</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>AvgTimeouts</id>
-        <className>chord.NodeManager</className>
-        <methodName>getAvgTimeouts</methodName>
+        <id>minPath</id>
+        <className>chord.Node</className>
+        <methodName>minPathLength</methodName>
+        <aggType>MIN</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
     <entry>
-      <string>MaxTimeouts</string>
+      <string>maxPath</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>MaxTimeouts</id>
-        <className>chord.NodeManager</className>
-        <methodName>getMaxTimeouts</methodName>
+        <id>maxPath</id>
+        <className>chord.Node</className>
+        <methodName>maxPathLength</methodName>
+        <aggType>MAX</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
     <entry>
-      <string>MinTimeouts</string>
+      <string>avgPath</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>MinTimeouts</id>
-        <className>chord.NodeManager</className>
-        <methodName>getMinTimeouts</methodName>
+        <id>avgPath</id>
+        <className>chord.Node</className>
+        <methodName>avgPathLength</methodName>
+        <aggType>MEAN</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
     <entry>
-      <string>Failures</string>
+      <string>minKeys</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>Failures</id>
-        <className>chord.NodeManager</className>
-        <methodName>getFailures</methodName>
+        <id>minKeys</id>
+        <className>chord.Node</className>
+        <methodName>minKeys</methodName>
+        <aggType>MIN</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>maxKeys</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>maxKeys</id>
+        <className>chord.Node</className>
+        <methodName>maxKeys</methodName>
+        <aggType>MAX</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>avgKeys</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>avgKeys</id>
+        <className>chord.Node</className>
+        <methodName>avgKeys</methodName>
+        <aggType>MEAN</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
   </methodDataSources>

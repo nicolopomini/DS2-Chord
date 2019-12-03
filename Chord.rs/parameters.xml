@@ -44,7 +44,7 @@
 						
 		/>
 				<parameter name="rounds" displayName="Number of rounds" type="int" 
-						defaultValue="100" 
+						defaultValue="20" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									

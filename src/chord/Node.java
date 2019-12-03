@@ -3,37 +3,37 @@ package chord;
 import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
-import repast.simphony.util.ContextUtils;
 
 public class Node {
 	public static int M;	// total number of positions = 2^M
 	
-	private Node predecessor, successor;
+	Node predecessor, successor;
 	private ArrayList<Node> fingerTable, successors;
-	private int id, next, timeouts, failures;
+	private int id, timeouts, failures;
 	private boolean failed;
 	
 	private ReentrantReadWriteLock fingerLock, successorsLock;
 	
 	private ArrayList<Integer> numberOfKeys, pathLengths;
 	private RepastEdge<Object> edge;
+	private Network<Object> net;
 	
-	public Node(int id) {
+	public Node(int id, Network<Object> net) {
 		this.id = id;
-		this.next = 0;
 		fingerLock = new ReentrantReadWriteLock();
 		successorsLock = new ReentrantReadWriteLock();
+		this.fingerTable = new ArrayList<Node>();
 		this.numberOfKeys = new ArrayList<>();
 		this.pathLengths = new ArrayList<>();
 		this.timeouts = 0;
 		this.failures = 0;
 		this.failed = false;
 		this.edge = null;
+		this.net = net;
 	}
 	
 	public void setPredecessor(Node predecessor) {
@@ -73,7 +73,6 @@ public class Node {
 					else
 						this.fingerTable.add(newFinger);
 					this.fingerLock.writeLock().unlock();
-					this.next = (this.next + 1) % M;
 				}
 				else {
 					toRemove.add(i);
@@ -103,7 +102,7 @@ public class Node {
 		if (id < this.id)
 			id += fullClock;
 		this.fingerLock.readLock().lock();
-		for (int i = M - 1; i >= 0; i--) {
+		for (int i = this.fingerTable.size() - 1; i >= 0; i--) {
 			Node f = this.fingerTable.get(i);
 			int offset = 0;
 			if (f.id < this.id)
@@ -120,27 +119,7 @@ public class Node {
 	public Pair findSuccessor(int id, int startingStep) {
 		if (this.failed)
 			return null;
-		if (this.successor.isFailed()) {
-			Context<Object> context = ContextUtils.getContext(this);
-			Network<Object> net = (Network<Object>)context.getProjection("chord network");
-			if (this.edge != null)
-				net.removeEdge(this.edge);
-			this.edge = null;
-			this.successorsLock.readLock().lock();
-			for (Node n: this.successors)
-				if (n != null && !n.isFailed()) { 
-					this.successor = n;
-					this.edge = net.addEdge(this, this.successor);
-					break;
-				} else {
-					this.timeouts++;
-				}
-			this.successorsLock.readLock().unlock();
-			if (this.successor.isFailed()) {
-				System.err.println("Fatal: all successors have crashed");
-				System.exit(1);
-			}
-		}
+		this.checkSuccessor(true);
 		if (this.id == id)
 			return new Pair(this, startingStep);
 		if (id > this.id && id <= this.successor.getId())
@@ -150,7 +129,7 @@ public class Node {
 		if (this.successor.id < this.id && id <= this.successor.id)
 			return new Pair(this.successor, 1 + startingStep);
 		Node x = this.closestPrecedingNode(id);
-		if (x.isFailed())
+		if (x.isFailed() || x.id == this.id)
 			return null;
 		return x.findSuccessor(id, startingStep + 1);
 	}
@@ -162,50 +141,49 @@ public class Node {
 		this.predecessor = null;
 	}
 	
-	public void join(Node n) {
-		this.successor = n.findSuccessor(this.id, 0).node;
+	public boolean join(Node n) {
+		Pair result = n.findSuccessor(this.id, 0);
+		if (result == null)
+			return false;
+		this.successor = result.node;
 		this.predecessor = null;
+		this.successors = new ArrayList<Node>(this.successor.successors);
+		this.successors.remove(this.successors.size() - 1);
+		this.successors.add(0, this.successor);
+		this.edge = this.net.addEdge(this, this.successor);
+		// chiamare notify?
+		this.notify(this.successor);
+		return true;
 	}
 	
 	public void notify(Node n) {
-		if (this.predecessor == null || (n.getId() > this.predecessor.getId() && n.getId() < this.id)) {
+		if (this.predecessor == null || (n.getId() > this.predecessor.getId() && n.getId() < this.id) || (this.predecessor.id > this.id && n.id < this.id) || (this.predecessor.id > this.id && n.id > this.predecessor.id)) { // controllare condizione pure qui
+			if (this.predecessor != null && this.predecessor.edge != null) {
+				this.net.removeEdge(this.predecessor.edge);
+				this.predecessor.edge = null;
+			}
 			this.predecessor = n;
 			this.computeNumberOfKeys();
+			this.predecessor.edge = this.net.addEdge(this.predecessor, this);
 		}
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)
 	public void stabilize() {
 		if (!this.failed) {
-			if (this.successor.isFailed()) {
-				Context<Object> context = ContextUtils.getContext(this);
-				Network<Object> net = (Network<Object>)context.getProjection("chord network");
-				if (this.edge != null)
-					net.removeEdge(this.edge);
-				this.edge = null;
-				this.successorsLock.readLock().lock();
-				for (Node n: this.successors)
-					if (n != null && !n.isFailed()) { 
-						this.successor = n;
-						this.edge = net.addEdge(this, this.successor);
-						break;
-					} else {
-						this.timeouts++;
-					}
-				this.successorsLock.readLock().unlock();
-				if (this.successor.isFailed()) {
-					System.err.println("Fatal: all successors have crashed");
-					System.exit(1);
-				}
-			}
-			Node x = successor.predecessor;
-			if (x != null && x.id > this.id && x.id < this.successor.id) {
+			this.checkSuccessor(false);
+			Node x = this.successor.predecessor;
+			if (x != null && ((x.id > this.id && x.id < this.successor.id) || (this.successor.id < this.id && x.id < this.successor.id) || (this.id < x.id && this.successor.id < this.id && x.id > this.successor.id))) {	// condizione sbagliata nel caso in cui sono vicino a 0
+				this.successor = x;
 				ArrayList<Node> successors = new ArrayList<>(x.getSuccessors());
 				successors.remove(successors.size() - 1);
 				successors.add(0, x);
 				this.successorsLock.writeLock().lock();
 				this.successors = successors;
 				this.successorsLock.writeLock().unlock();
+				if (this.edge != null)
+					this.net.removeEdge(this.edge);
+				this.edge = this.net.addEdge(this, this.successor);
 			}
 			successor.notify(this);
 		}
@@ -305,17 +283,37 @@ public class Node {
 	}
 	
 	public void leave() {
-		Context<Object> context = ContextUtils.getContext(this);
-		Network<Object> net = (Network<Object>)context.getProjection("chord network");
 		if (this.edge != null)
-			net.removeEdge(this.edge);
+			this.net.removeEdge(this.edge);
 		this.successor.predecessor = this.predecessor;
 		if (this.predecessor != null) {
 			this.predecessor.successor = this.successor;
 			this.predecessor.successors = this.successors;
 			if (this.predecessor.edge != null)
-				net.removeEdge(this.predecessor.edge);
-			this.predecessor.edge = net.addEdge(this.predecessor, this.successor);
+				this.net.removeEdge(this.predecessor.edge);
+			this.predecessor.edge = this.net.addEdge(this.predecessor, this.successor);
+		}
+	}
+	
+	private void checkSuccessor(boolean timeouts) {
+		if (this.successor.isFailed()) {
+			this.edge = null;
+			this.successorsLock.readLock().lock();
+			for (Node n: this.successors)
+				if (n != null && !n.isFailed()) { 
+					this.successor = n;
+					if (this.edge != null)
+						this.net.removeEdge(this.edge);
+					this.edge = net.addEdge(this, this.successor);
+					break;
+				} else if (timeouts) {
+					this.timeouts++;
+				}
+			this.successorsLock.readLock().unlock();
+			if (this.successor.isFailed()) {
+				System.err.println("Fatal: all successors have crashed");
+				System.exit(1);
+			}
 		}
 	}
 }
