@@ -39,7 +39,6 @@ public class Node {
 	public void setPredecessor(Node predecessor) {
 		this.predecessor = predecessor;
 		this.computeNumberOfKeys();
-		// System.out.println(this.id + " pred: " + this.predecessor.id + " succ: " + this.successor.id);
 	}
 	
 	public ArrayList<Node> getSuccessors() {
@@ -151,7 +150,6 @@ public class Node {
 		this.successors.remove(this.successors.size() - 1);
 		this.successors.add(0, this.successor);
 		this.edge = this.net.addEdge(this, this.successor);
-		// chiamare notify?
 		this.notify(this.successor);
 		return true;
 	}
@@ -235,7 +233,12 @@ public class Node {
 		int sum = 0;
 		for (Integer i: this.numberOfKeys)
 			sum += i;
-		return sum * 1.0 / this.numberOfKeys.size();
+		return this.numberOfKeys.size() > 0 ? sum * 1.0 / this.numberOfKeys.size() : 0.0;
+	}
+	
+	public int lastKeys() {
+		System.out.println("Node " + this.id + ": " + (this.numberOfKeys.size() > 0 ? this.numberOfKeys.get(this.numberOfKeys.size() - 1) : 0));
+		return this.numberOfKeys.size() > 0 ? this.numberOfKeys.get(this.numberOfKeys.size() - 1) : 0;
 	}
 	
 	public int minPathLength() {
@@ -258,7 +261,7 @@ public class Node {
 		int sum = 0;
 		for (Integer i: this.pathLengths)
 			sum += i;
-		return sum * 1.0 / this.pathLengths.size();
+		return this.pathLengths.size() > 0 ? sum * 1.0 / this.pathLengths.size() : 0.0;
 	}
 	
 	public int getTimeouts() {

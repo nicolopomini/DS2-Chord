@@ -89,15 +89,9 @@ public class Builder implements ContextBuilder<Object> {
 				successors.add(allNodes.get(allIds.get(index)));
 				index = (index + 1) % allIds.size();
 			}
-			//System.out.println(finger.size());
 			n.setFingerTable(finger);
 			n.setSuccessors(successors);
 			net.addEdge(n, successors.get(0));
-//			System.out.println("Process " + n.getId());
-//			ArrayList<Integer> print = new ArrayList<>();
-//			for (Node x: finger)
-//				print.add(x.getId());
-//			System.out.println(print);
 		}
 		// set predecessor
 		for (int i = 0; i < allIds.size(); i++) {

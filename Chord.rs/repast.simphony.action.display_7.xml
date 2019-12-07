@@ -13,18 +13,8 @@
       <null/>
     </entry>
   </editedStyles>
-  <netStyles>
-    <entry>
-      <string>chord network</string>
-      <string>repast.simphony.visualizationOGL2D.DefaultEdgeStyleOGL2D</string>
-    </entry>
-  </netStyles>
-  <editedNetStyles>
-    <entry>
-      <string>chord network</string>
-      <null/>
-    </entry>
-  </editedNetStyles>
+  <netStyles/>
+  <editedNetStyles/>
   <frequency>ON_MOVE</frequency>
   <schedParams>
     <start>1.0</start>
@@ -33,7 +23,7 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>132007607</hashCode>
+    <hashCode>-1828192341</hashCode>
   </schedParams>
   <layoutClassName>foo.bar.baz</layoutClassName>
   <layoutProjection>space</layoutProjection>
@@ -50,23 +40,11 @@
       <attributes/>
       <type>continuous space</type>
     </repast.simphony.scenario.data.ProjectionData>
-    <repast.simphony.scenario.data.ProjectionData>
-      <id>chord network</id>
-      <attributes/>
-      <type>network</type>
-    </repast.simphony.scenario.data.ProjectionData>
   </projections>
   <visualizationProperties class="repast.simphony.visualization.UnitSizeLayoutProperties">
     <unitSize>15.0</unitSize>
   </visualizationProperties>
   <projectionDescriptors>
-    <entry>
-      <string>chord network</string>
-      <repast.simphony.visualization.engine.DefaultProjectionDescriptor>
-        <proj reference="../../../../projections/repast.simphony.scenario.data.ProjectionData[2]"/>
-        <props/>
-      </repast.simphony.visualization.engine.DefaultProjectionDescriptor>
-    </entry>
     <entry>
       <string>space</string>
       <repast.simphony.visualization.continuous.ContinuousProjectionDescriptor>

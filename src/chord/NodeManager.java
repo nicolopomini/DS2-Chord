@@ -62,21 +62,31 @@ public class NodeManager {
 			nodes = new ArrayList<>(this.allNodes.values());
 			for (int i = 0; i < this.joinLeave; i++) {
 				int nextKey = RandomHelper.nextIntFromTo(0, this.totalKeys - 1);
-				while (this.allNodes.containsKey(nextKey) || failed.contains(nextKey))
-					nextKey = RandomHelper.nextIntFromTo(0, this.totalKeys - 1);
 				Node randomKnown = nodes.get(RandomHelper.nextIntFromTo(0, nodes.size() - 1));
 				Node n = new Node(nextKey, this.net);
 				context.add(n);
-				if (n.join(randomKnown)) {
+				int trials = 0;
+				boolean done = n.join(randomKnown);
+				while (!done && trials < 10) {
+					context.remove(n);
+					trials++;
+					nextKey = RandomHelper.nextIntFromTo(0, this.totalKeys - 1);
+					while (this.allNodes.containsKey(nextKey) || failed.contains(nextKey))
+						nextKey = RandomHelper.nextIntFromTo(0, this.totalKeys - 1);
+					randomKnown = nodes.get(RandomHelper.nextIntFromTo(0, nodes.size() - 1));
+					n = new Node(nextKey, this.net);
+					context.add(n);
+					done = n.join(randomKnown);
+				}
+				if (!done)
+					System.err.println("Failed 10 times to create a new node");
+				else {
 					allNodes.put(nextKey, n);
 					double theta = 2 * Math.PI * nextKey / totalKeys;
 			        double x = center + radius * Math.cos(theta);
 			        double y = center + radius * Math.sin(theta);
 			        space.moveTo(n, x, y);
 			        System.out.println("Node " + nextKey + " started");
-				} else {
-					context.remove(n);
-					System.out.println("Failed starting node " + n.getId());
 				}
 			}
 			System.out.println("Done starting");
@@ -112,7 +122,7 @@ public class NodeManager {
 			total += n.getFailures();
 		return total;
 	}
-	@ScheduledMethod(start = 1, priority = ScheduleParameters.LAST_PRIORITY, interval = 1)
+	//@ScheduledMethod(start = 1, priority = ScheduleParameters.LAST_PRIORITY, interval = 1)
 	public void debug() {
 		ArrayList<Integer> ids = new ArrayList<>(this.allNodes.keySet());
 		Collections.sort(ids);
@@ -122,5 +132,55 @@ public class NodeManager {
 			int pred = x.predecessor == null ? -1 : x.predecessor.getId();
 			System.out.println(x.getId() + " succ: " + succ + "; pred: " + pred);
 		}
+	}
+	
+	public double avgKeys() {
+		ArrayList<Integer> ids = new ArrayList<>(this.allNodes.keySet());
+		Collections.sort(ids);
+		int total = 0;
+		for (int i = 0; i < ids.size(); i++) {
+			int current, next;
+			current = ids.get(i);
+			next = ids.get((i + 1) % ids.size());
+			if (next < current)
+				total += this.totalKeys + next - current;
+			else
+				total += next - current;
+		}
+		return total * 1.0 / ids.size();
+	}
+	
+	public int minKeys() {
+		ArrayList<Integer> ids = new ArrayList<>(this.allNodes.keySet());
+		Collections.sort(ids);
+		int min = Integer.MAX_VALUE;
+		for (int i = 0; i < ids.size(); i++) {
+			int current, next, value;
+			current = ids.get(i);
+			next = ids.get((i + 1) % ids.size());
+			if (next < current)
+				value = this.totalKeys + next - current;
+			else
+				value = next - current;
+			min = value < min ? value : min;
+		}
+		return min;
+	}
+	
+	public int maxKeys() {
+		ArrayList<Integer> ids = new ArrayList<>(this.allNodes.keySet());
+		Collections.sort(ids);
+		int max = Integer.MIN_VALUE;
+		for (int i = 0; i < ids.size(); i++) {
+			int current, next, value;
+			current = ids.get(i);
+			next = ids.get((i + 1) % ids.size());
+			if (next < current)
+				value = this.totalKeys + next - current;
+			else
+				value = next - current;
+			max = value > max ? value : max;
+		}
+		return max;
 	}
 }

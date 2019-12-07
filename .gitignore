@@ -49,3 +49,5 @@ installer/
 MessageCenter.log4j.properties
 failures.*.txt
 standard.*.txt
+keys*.txt
+paths*.txt

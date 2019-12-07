@@ -1,14 +1,13 @@
 <repast.simphony.data2.engine.FileSinkDescriptor simphonyVersion="2.7.0">
-  <name>FailureSink</name>
-  <dataSet>FailureDS</dataSet>
+  <name>keys</name>
+  <dataSet>Keys</dataSet>
   <delimiter>,</delimiter>
   <format>TABULAR</format>
   <sourceIds class="linked-hash-set">
-    <string>AvgTimeouts</string>
-    <string>MaxTimeouts</string>
-    <string>MinTimeouts</string>
-    <string>Failures</string>
+    <string>avgKeys</string>
+    <string>minKeys</string>
+    <string>maxKeys</string>
   </sourceIds>
-  <fileName>failures.txt</fileName>
+  <fileName>keys.txt</fileName>
   <addTimeStamp>true</addTimeStamp>
 </repast.simphony.data2.engine.FileSinkDescriptor>

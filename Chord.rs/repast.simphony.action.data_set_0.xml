@@ -1,5 +1,5 @@
 <repast.simphony.data2.engine.DataSetDescriptor simphonyVersion="2.7.0">
-  <name>Keys</name>
+  <name>FailureDS</name>
   <type>NON_AGGREGATE</type>
   <sourceType>chord.NodeManager</sourceType>
   <inclTick>false</inclTick>
@@ -12,32 +12,40 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>ONE_TIME</frequency>
-    <hashCode>544390947</hashCode>
+    <hashCode>-707477011</hashCode>
   </scheduleParams>
   <atEnd>false</atEnd>
   <methodDataSources class="linked-hash-map">
     <entry>
-      <string>avgKeys</string>
+      <string>AvgTimeouts</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>avgKeys</id>
+        <id>AvgTimeouts</id>
         <className>chord.NodeManager</className>
-        <methodName>avgKeys</methodName>
+        <methodName>getAvgTimeouts</methodName>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
     <entry>
-      <string>minKeys</string>
+      <string>MaxTimeouts</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>minKeys</id>
+        <id>MaxTimeouts</id>
         <className>chord.NodeManager</className>
-        <methodName>minKeys</methodName>
+        <methodName>getMaxTimeouts</methodName>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
     <entry>
-      <string>maxKeys</string>
+      <string>MinTimeouts</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>maxKeys</id>
+        <id>MinTimeouts</id>
         <className>chord.NodeManager</className>
-        <methodName>maxKeys</methodName>
+        <methodName>getMinTimeouts</methodName>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>Failures</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>Failures</id>
+        <className>chord.NodeManager</className>
+        <methodName>getFailures</methodName>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
   </methodDataSources>
