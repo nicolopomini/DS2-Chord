@@ -11,7 +11,7 @@ import repast.simphony.space.graph.RepastEdge;
 public class Node {
 	public static int M;	// total number of positions = 2^M
 	
-	Node predecessor, successor;
+	private Node predecessor, successor;
 	private ArrayList<Node> fingerTable, successors;
 	private int id, timeouts, failures;
 	private boolean failed;
@@ -142,15 +142,12 @@ public class Node {
 	
 	public boolean join(Node n) {
 		Pair result = n.findSuccessor(this.id, 0);
-		if (result == null)
+		if (result == null || result.node.id == this.id)
 			return false;
 		this.successor = result.node;
 		this.predecessor = null;
-		this.successors = new ArrayList<Node>(this.successor.successors);
-		this.successors.remove(this.successors.size() - 1);
-		this.successors.add(0, this.successor);
-		this.edge = this.net.addEdge(this, this.successor);
-		this.notify(this.successor);
+		this.successors = new ArrayList<Node>();
+		this.successors.add(this.successor);
 		return true;
 	}
 	
@@ -197,13 +194,11 @@ public class Node {
 		if (!this.failed) {
 			int maxKey = (int)Math.pow(2, M);
 			int key = RandomHelper.nextIntFromTo(0, maxKey - 1);
-			//System.out.println("Node " + this.id + " searches for " + key);
 			Pair n = this.findSuccessor(key, 0);
 			if (n == null)
 				this.failures++;
 			else
 				this.pathLengths.add(n.steps);
-			//System.out.println("Got " + n.id);
 		}
 	}
 	
@@ -234,11 +229,6 @@ public class Node {
 		for (Integer i: this.numberOfKeys)
 			sum += i;
 		return this.numberOfKeys.size() > 0 ? sum * 1.0 / this.numberOfKeys.size() : 0.0;
-	}
-	
-	public int lastKeys() {
-		System.out.println("Node " + this.id + ": " + (this.numberOfKeys.size() > 0 ? this.numberOfKeys.get(this.numberOfKeys.size() - 1) : 0));
-		return this.numberOfKeys.size() > 0 ? this.numberOfKeys.get(this.numberOfKeys.size() - 1) : 0;
 	}
 	
 	public int minPathLength() {

@@ -40,12 +40,8 @@ public class Builder implements ContextBuilder<Object> {
 		String runType = params.getString("type");
 		int failJoin = params.getInteger("join-fail");
 		assert (failureProb <= 1.0);
-		if (RunEnvironment.getInstance().isBatch()) {
-			keysExponent = nodes + 7;
-			nodes = (int)Math.pow(2, nodes);
-		}
-		Node.M = keysExponent;
 		int totalKeys = (int)Math.pow(2, keysExponent);
+		Node.M = keysExponent;
 		System.out.println("Total nodes " + nodes);
 		System.out.println("Total keys " + totalKeys);
 		// setting positions

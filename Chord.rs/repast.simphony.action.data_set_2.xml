@@ -1,5 +1,5 @@
 <repast.simphony.data2.engine.DataSetDescriptor simphonyVersion="2.7.0">
-  <name>Paths</name>
+  <name>Keys</name>
   <type>AGGREGATE</type>
   <inclTick>false</inclTick>
   <inclBatchRun>false</inclBatchRun>
@@ -11,34 +11,34 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>ONE_TIME</frequency>
-    <hashCode>544390947</hashCode>
+    <hashCode>14867484</hashCode>
   </scheduleParams>
   <atEnd>false</atEnd>
   <methodDataSources class="linked-hash-map">
     <entry>
-      <string>avgPath</string>
+      <string>avgKeys</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>avgPath</id>
+        <id>avgKeys</id>
         <className>chord.Node</className>
-        <methodName>avgPathLength</methodName>
+        <methodName>avgKeys</methodName>
         <aggType>MEAN</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
     <entry>
-      <string>maxPath</string>
+      <string>maxKeys</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>maxPath</id>
+        <id>maxKeys</id>
         <className>chord.Node</className>
-        <methodName>maxPathLength</methodName>
+        <methodName>maxKeys</methodName>
         <aggType>MAX</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
     <entry>
-      <string>minPath</string>
+      <string>minKeys</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>minPath</id>
+        <id>minKeys</id>
         <className>chord.Node</className>
-        <methodName>minPathLength</methodName>
+        <methodName>minKeys</methodName>
         <aggType>MIN</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>

@@ -5,8 +5,8 @@
   <format>TABULAR</format>
   <sourceIds class="linked-hash-set">
     <string>avgKeys</string>
-    <string>minKeys</string>
     <string>maxKeys</string>
+    <string>minKeys</string>
   </sourceIds>
   <fileName>keys.txt</fileName>
   <addTimeStamp>true</addTimeStamp>
