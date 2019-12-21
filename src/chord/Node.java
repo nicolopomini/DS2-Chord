@@ -11,17 +11,33 @@ import repast.simphony.space.graph.RepastEdge;
 public class Node {
 	public static int M;	// total number of positions = 2^M
 	
+	// pointers to predecessor and successor nodes
 	private Node predecessor, successor;
+	
+	// list of nodes, used as finger table and list of successors, in case the successor fails
 	private ArrayList<Node> fingerTable, successors;
+	
+	// id of the node, plus the counters for the number of timeouts and failures faced during the simulations
 	private int id, timeouts, failures;
+	
+	// boolean variable to indicate whether the node has failed
 	private boolean failed;
 	
+	// locks to access some portion of memory in mutual exclusion
 	private ReentrantReadWriteLock fingerLock, successorsLock;
 	
+	// lists used for the evaluation, to count the number of keys handled by the node, and the number of messages used to satisfy a lookup
 	private ArrayList<Integer> numberOfKeys, pathLengths;
+	
+	// references to the visual network 
 	private RepastEdge<Object> edge;
 	private Network<Object> net;
 	
+	/**
+	 * Create a new node
+	 * @param id the id of the node
+	 * @param net a reference to the visual network of nodes
+	 */
 	public Node(int id, Network<Object> net) {
 		this.id = id;
 		fingerLock = new ReentrantReadWriteLock();
@@ -36,11 +52,19 @@ public class Node {
 		this.net = net;
 	}
 	
+	/**
+	 * Set the predecessor of the node
+	 * @param predecessor a reference to the predecessor
+	 */
 	public void setPredecessor(Node predecessor) {
 		this.predecessor = predecessor;
 		this.computeNumberOfKeys();
 	}
 	
+	/**
+	 * Get the list of successors
+	 * @return The list of successors
+	 */
 	public ArrayList<Node> getSuccessors() {
 		this.successorsLock.readLock().lock();
 		ArrayList<Node> successorsCopy = new ArrayList<>(this.successors);
@@ -48,15 +72,26 @@ public class Node {
 		return successorsCopy;
 	}
 	
+	/**
+	 * Set the list of successors
+	 * @param successors The list of successors
+	 */
 	public void setSuccessors(ArrayList<Node> successors) {
 		this.successors = successors;
 		this.successor = this.successors.get(0);
 	}
 	
+	/**
+	 * Set the starting finger table
+	 * @param fingerTable the finger table
+	 */
 	public void setFingerTable(ArrayList<Node> fingerTable) {
 		this.fingerTable = fingerTable;
 	}
 	
+	/**
+	 * Fix the finger table, including new nodes and removing failed ones
+	 */
 	@ScheduledMethod(start = 1, interval = 1)
 	public void fixFinger() {
 		if (!this.failed) {
@@ -84,6 +119,10 @@ public class Node {
 		}
 	}
 	
+	/**
+	 * Get the id of the node
+	 * @return the id
+	 */
 	public int getId() {
 		return id;
 	}
@@ -115,6 +154,12 @@ public class Node {
 		return this;
 	}
 	
+	/**
+	 * Search the node that handles a given key
+	 * @param id the key to search
+	 * @param startingStep pass 0
+	 * @return the node that handles the key, plus the number of messages required to fulfill the request; null in case of failure
+	 */
 	public Pair findSuccessor(int id, int startingStep) {
 		if (this.failed)
 			return null;
@@ -140,6 +185,11 @@ public class Node {
 		this.predecessor = null;
 	}
 	
+	/**
+	 * Join an existing ring 
+	 * @param n the node used to discover the successor
+	 * @return true if everything goes well, false otherwise
+	 */
 	public boolean join(Node n) {
 		Pair result = n.findSuccessor(this.id, 0);
 		if (result == null || result.node.id == this.id)
@@ -151,6 +201,10 @@ public class Node {
 		return true;
 	}
 	
+	/**
+	 * Notify a node about your presence as potential predecessor 
+	 * @param n the node to be notified
+	 */
 	public void notify(Node n) {
 		if (this.predecessor == null || (n.getId() > this.predecessor.getId() && n.getId() < this.id) || (this.predecessor.id > this.id && n.id < this.id) || (this.predecessor.id > this.id && n.id > this.predecessor.id)) { // controllare condizione pure qui
 			if (this.predecessor != null && this.predecessor.edge != null) {
@@ -163,6 +217,9 @@ public class Node {
 		}
 	}
 	
+	/**
+	 * Function to fix pointer and stabilize successors with new nodes and failed ones
+	 */
 	@ScheduledMethod(start = 1, interval = 1)
 	public void stabilize() {
 		if (!this.failed) {
@@ -183,12 +240,18 @@ public class Node {
 			successor.notify(this);
 		}
 	}
+	/**
+	 * Check if the predecessor has failed, and in case set it to null
+	 */
 	@ScheduledMethod(start = 1, interval = 1)
 	public void checkPredecessor() {
 		if (this.predecessor == null || this.predecessor.isFailed())
 			this.predecessor = null;
 	}
 	
+	/**
+	 * Search for a random key
+	 */
 	@ScheduledMethod(start = 1, interval = 1)
 	public void searchKey() {
 		if (!this.failed) {
